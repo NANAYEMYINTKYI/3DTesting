@@ -99,3 +99,4 @@ function setupSceneForModel(modelPath) {
   // Add the renderer's DOM element
   document.getElementById("model-container").appendChild(renderer.domElement);
 }
+//still having problem about making to 3d moving gltf(can't path to .js file. ,need to setting background size fic)
