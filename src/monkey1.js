@@ -50,7 +50,7 @@ loader.load(
         model.scale.set(1, 1, 1); 
         scene.add(model)
         // Initialize the animation mixer and play all animations
-        mixer = new THREE.AnimationMixer(model);
+        mixer = new THREE.AnimationMixer(model);//** */
         //gltf.animations.forEach((clip) => {
             //mixer.clipAction(clip).play();
         //});
@@ -81,3 +81,4 @@ window.addEventListener('resize', () => {
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
 });
+//study more about mixer(it able to chage animation)
