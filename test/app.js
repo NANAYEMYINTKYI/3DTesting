@@ -5,34 +5,18 @@ import * as RococotestModule from "./src/Rococotest.js";
 
 // Scene setup
 let scene, renderer, camera;
+let currentModel = null;
 
-// Load and display the first model by default
-let currentModel;
 setupDefaultScene();
-currentModel = monkey1Module.default.createModel();
-scene.add(currentModel.scene);
 document.getElementById("model-container").appendChild(renderer.domElement);
 animate();
 
 // Handle model selection
 const modelSelect = document.getElementById("model-select");
-modelSelect.addEventListener("change", (event) => {
-  const selectedModel = event.target.value;
-  if (currentModel) {
-    scene.remove(currentModel.scene);
-    currentModel.disposeResources();
-  }
+modelSelect.addEventListener("change", handleModelChange);
 
-  if (selectedModel === "monkey1") {
-    currentModel = monkey1Module.default.createModel();
-  } else if (selectedModel === "monkey2") {
-    currentModel = monkey2Module.default.createModel();
-  } else if (selectedModel === "Rococotest") {
-    currentModel = RococotestModule.default.createModel();
-  }
-
-  scene.add(currentModel.scene);
-});
+// Initial model load
+handleModelChange({ target: { value: "monkey1" } });
 
 // Animation loop
 function animate() {
@@ -54,6 +38,27 @@ function setupDefaultScene() {
   renderer.setPixelRatio(window.devicePixelRatio);
   camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 700);
   camera.position.set(4, 100, 300);
+}
+
+function handleModelChange(event) {
+  const selectedModel = event.target.value;
+
+  if (currentModel) {
+    scene.remove(currentModel.scene);
+    currentModel.disposeResources();
+  }
+
+  if (selectedModel === "monkey1") {
+    currentModel = monkey1Module.default.createModel();
+  } else if (selectedModel === "monkey2") {
+    currentModel = monkey2Module.default.createModel();
+  } else if (selectedModel === "Rococotest") {
+    currentModel = RococotestModule.default.createModel();
+  }
+
+  if (currentModel) {
+    scene.add(currentModel.scene);
+  }
 }
 
 // Handle window resize
