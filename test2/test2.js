@@ -17,7 +17,7 @@ const loader = new GLTFLoader();
 let model;
 
 loader.load(
-  "monkey_dancing/test/test-2.gltf",
+  "/public/test-2/test-2.gltf",
   function (gltf) {
     model = gltf.scene;
     scene.add(model);
