@@ -29,7 +29,15 @@ const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
 
 let model;
-let mixer;
+
+//reset bone rotation
+// function resetBoneRotations(object) {
+//   object.traverse((node) => {
+//     if (node.isBone) {
+//       node.rotation.set(0, 0, 0);
+//     }
+//   });
+// }
 
 const loader = new GLTFLoader();
 loader.load(
@@ -39,12 +47,13 @@ loader.load(
     model.scale.set(1, 1, 1); // Adjust scale if necessary
     scene.add(model);
 
-    // Initialize the animation mixer and play all animations
-    // mixer = new THREE.AnimationMixer(model);
-    // gltf.animations.forEach((clip) => {
-    //   mixer.clipAction(clip).play();
-    // });
+    if (gltf.animations && gltf.animations.length > 0) {
+      console.log("Model contains animations:", gltf.animations.length);
+      // Reset all bone rotations to ensure no animation is applied
+      // resetBoneRotations(model);
+    }
 
+    // Log model structure and properties
     if (model) {
       model.traverse((node) => {
         console.log(node.name, node.type);
@@ -65,50 +74,15 @@ loader.load(
   }
 );
 
-// let rotatedirection = 1;
-// const rotationSpeed = 0.02;
-// const minRotationY = -Math.PI / 4;
-// const maxRotationY = Math.PI / 4;
-// let rightleg;
+function animate() {
+  requestAnimationFrame(animate);
 
-// function selectpart() {
-//   if (model) {
-//     model.traverse((node) => {
-//       if (node.isBone && node.name === "mixamorig1RightLeg") {
-//         rightleg = node;
-//       }
-//     });
-//   }
-// }
+  // You can add custom animation logic here in the future
 
-// function adjustmovement() {
-//   selectpart();
-//   if (rightleg) {
-//     if (rightleg.rotation.y >= maxRotationY) {
-//       rotatedirection = -1;
-//     } else if (rightleg.rotation.y <= minRotationY) {
-//       rotatedirection = 1;
-//     }
-//     rightleg.rotation.y += rotationSpeed * rotatedirection;
-//   }
-// }
+  renderer.render(scene, camera);
+}
 
-const clock = new THREE.Clock();
-
-// function animate() {
-//   requestAnimationFrame(animate);
-
-//   const delta = clock.getDelta();
-//   if (mixer) {
-//     mixer.update(delta);
-//   }
-
-//   adjustmovement();
-//   renderer.render(scene, camera);
-// }
-
-// animate();
- renderer.render(scene, camera);
+animate();
 
 // Handle window resize
 window.addEventListener('resize', () => {
