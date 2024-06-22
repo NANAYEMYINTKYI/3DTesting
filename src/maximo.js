@@ -85,4 +85,3 @@ function animate() {
 }
 // Start animation loop
 animate();
-main.js
