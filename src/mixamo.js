@@ -54,10 +54,11 @@ directionalLight.position.set(5, 5, 5).normalize();
 scene.add(directionalLight);
 let rotatedirection = 1;
 // Animation parameters
-const rotationSpeed = 0.02; // radians per frame
+const rotationSpeed = 0.005; // radians per frame
 // RotationDegree
 const minRotationY = -Math.PI / 4; // (-45 degrees)
 const maxRotationY = Math.PI / 4; // (45 degrees)
+
 let neckbone;
 function selectpart() {
   if (model) {
@@ -78,7 +79,7 @@ function adjustmovement() {
     } else if (neckbone.rotation.y <= minRotationY) {
       rotatedirection = 1; // Switch to rotating right
     }
-
+    console.log(maxRotationY, neckbone.rotation.y);
     neckbone.rotation.y += rotationSpeed * rotatedirection;
     //console.log(`Neck rotation: (${neckbone.rotation.x}, ${neckbone.rotation.y}, ${neckbone.rotation.z})`);
   }
