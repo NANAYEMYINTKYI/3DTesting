@@ -25,7 +25,7 @@ const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 directionalLight.position.set(5, 10, 7.5);
 scene.add(directionalLight);
 
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Soft white light
 scene.add(ambientLight);
 
 let model;
@@ -47,13 +47,13 @@ loader.load(
     model.scale.set(1, 1, 1); // Adjust scale if necessary
     scene.add(model);
 
-    if (gltf.animations && gltf.animations.length > 0) {
-      console.log("Model contains animations:", gltf.animations.length);
-      // Reset all bone rotations to ensure no animation is applied
-      // resetBoneRotations(model);
-    }
+    // if (gltf.animations && gltf.animations.length > 0) {
+    //   console.log("Model contains animations:", gltf.animations.length);
+    //   // Reset all bone rotations to ensure no animation is applied
+    //   // resetBoneRotations(model);
+    // }
 
-    // Log model structure and properties
+    // Log model structure and properties(logging and debugging purposes)
     if (model) {
       model.traverse((node) => {
         console.log(node.name, node.type);
@@ -73,12 +73,56 @@ loader.load(
     console.error(error);
   }
 );
+let rotatedirection = 1;
+// Animation parameters
+const rotationSpeed = 0.02; // radians per frame
+// RotationDegree
+const minRotationY = -Math.PI / 4; // (-45 degrees)
+const maxRotationY = Math.PI / 4; // (45 degrees)
+let LeftFoot;
+
+function selectpart() {
+  if (model) {
+    model.traverse((node) => {
+      if (node.isBone && node.name === "LeftFoot") {
+        LeftFoot = node;
+      }
+    });
+  }
+}
+function adjustmovement() {
+  // Example: Accessing and manipulating bones
+  selectpart();
+  if (function adjustmovement() {
+    // Example: Accessing and manipulating bones
+    selectpart();
+    if (LeftFoot) {
+      // Check if the rotation is within constraints
+      if (LeftFoot.rotation.y >= maxRotationY) {
+        rotatedirection = -1; // Switch to rotating left
+      } else if (LeftFoot.rotation.y <= minRotationY) {
+        rotatedirection = 1; // Switch to rotating right
+      }
+  
+      LeftFoot.rotation.y += rotationSpeed * rotatedirection;
+      //console.log(`Neck rotation: (${neckbone.rotation.x}, ${neckbone.rotation.y}, ${neckbone.rotation.z})`);
+    }
+  }) {
+    // Check if the rotation is within constraints
+    if (LeftFoot.rotation.y >= maxRotationY) {
+      rotatedirection = -1; // Switch to rotating left
+    } else if (LeftFoot.rotation.y <= minRotationY) {
+      rotatedirection = 1; // Switch to rotating right
+    }
+
+    LeftFoot.rotation.y += rotationSpeed * rotatedirection;
+    //console.log(`Neck rotation: (${neckbone.rotation.x}, ${neckbone.rotation.y}, ${neckbone.rotation.z})`);
+  }
+}
 
 function animate() {
   requestAnimationFrame(animate);
-
-  // You can add custom animation logic here in the future
-
+  adjustmovement();
   renderer.render(scene, camera);
 }
 
