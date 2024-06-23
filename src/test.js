@@ -38,14 +38,7 @@ let boneposition;
 //     }
 //   });
 // }
-fetch('data_saved.json')
-  .then(response => response.json())
-  .then(data => {
-  data_saved = data;
-  loadModel();
-  })
-  .catch(error => console.error('Error loading JSON:', error));
-  
+
 const loader = new GLTFLoader();
 loader.load(
   "/Rokoko/1.gltf",
@@ -92,7 +85,7 @@ function applydata_saved() {
       });
   }
 }
-/* function adjustmovement() {
+function adjustmovement() {
   // Example: Accessing and manipulating bones
   selectpart();
   if (function adjustmovement() {
@@ -120,10 +113,11 @@ function applydata_saved() {
     LeftFoot.rotation.y += rotationSpeed * rotatedirection;
     //console.log(`Neck rotation: (${neckbone.rotation.x}, ${neckbone.rotation.y}, ${neckbone.rotation.z})`);
   }
-} */
+}
 
 function animate() {
   requestAnimationFrame(animate);
+  adjustmovement();
   renderer.render(scene, camera);
 }
 
