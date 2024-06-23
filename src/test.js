@@ -29,7 +29,7 @@ const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Soft white light
 scene.add(ambientLight);
 
 let model;
-let boneposition;
+
 //reset bone rotation
 // function resetBoneRotations(object) {
 //   object.traverse((node) => {
@@ -47,8 +47,14 @@ loader.load(
     model.scale.set(1, 1, 1); // Adjust scale if necessary
     scene.add(model);
 
+    // if (gltf.animations && gltf.animations.length > 0) {
+    //   console.log("Model contains animations:", gltf.animations.length);
+    //   // Reset all bone rotations to ensure no animation is applied
+    //   // resetBoneRotations(model);
+    // }
+
     // Log model structure and properties(logging and debugging purposes)
-    /* if (model) {
+    if (model) {
       model.traverse((node) => {
         console.log(node.name, node.type);
         if (node.isMesh) {
@@ -59,7 +65,7 @@ loader.load(
           console.log("Rotation:", node.rotation);
         }
       });
-    } */
+    }
     model.position.set(0, 0, 0);
   },
   undefined,
@@ -67,22 +73,21 @@ loader.load(
     console.error(error);
   }
 );
-/* let rotatedirection = 1;
+let rotatedirection = 2
 // Animation parameters
-const rotationSpeed = 0.02; // radians per frame
+const rotationSpeed = 0.05; // radians per frame
 // RotationDegree
-const minRotationY = -Math.PI / 4; // (-45 degrees)
-const maxRotationY = Math.PI / 4; // (45 degrees)
-let LeftFoot; */
+const minRotationY= Math.PI ; // (-45 degrees)
+const maxRotationY = -Math.PI; // (45 degrees)
+let LeftFoot;
 
-function applydata_saved() {
-  if (model && boneposition) {
-      model.traverse(node => {
-          if (node.isBone && data_saved[node.name]) {
-              const position = data_saved[node.name];
-              node.position.set(position.x, position.y, position.z);
-          }
-      });
+function selectpart() {
+  if (model) {
+    model.traverse((node) => {
+      if (node.isBone && node.name === "LeftFoot") {
+        LeftFoot = node;
+      }
+    });
   }
 }
 function adjustmovement() {
