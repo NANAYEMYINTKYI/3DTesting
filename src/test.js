@@ -1,57 +1,137 @@
 import * as THREE from "three";
-import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { KeyframeTrack, AnimationClip } from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
+// Scene setup
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(
-  75,
-  window.innerWidth / window.innerHeight,
-  0.1,
-  1000
-);
-camera.position.z = 5;
+
+// Renderer setup
 const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setClearColor(0x00ff00);
+renderer.setPixelRatio(window.devicePixelRatio);
 document.body.appendChild(renderer.domElement);
 
-const loader = new GLTFLoader();
-let model, mixer, clock = new THREE.Clock();
+// Camera setup
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.set(0, 1, 2);
 
-loader.load('/mixamo/mixamo.gltf', function(gltf) {
+// Lighting setup
+const spotlight = new THREE.SpotLight(0xffffff, 3, 100, 0.2, 0.5);
+spotlight.position.set(0, 25, 0);
+scene.add(spotlight);
+
+const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+directionalLight.position.set(5, 10, 7.5);
+scene.add(directionalLight);
+
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Soft white light
+scene.add(ambientLight);
+
+let model;
+let boneposition;
+//reset bone rotation
+// function resetBoneRotations(object) {
+//   object.traverse((node) => {
+//     if (node.isBone) {
+//       node.rotation.set(0, 0, 0);
+//     }
+//   });
+// }
+fetch('data_saved.json')
+  .then(response => response.json())
+  .then(data => {
+  data_saved = data;
+  loadModel();
+  })
+  .catch(error => console.error('Error loading JSON:', error));
+  
+const loader = new GLTFLoader();
+loader.load(
+  "/Rokoko/1.gltf",
+  function (gltf) {
     model = gltf.scene;
+    model.scale.set(1, 1, 1); // Adjust scale if necessary
     scene.add(model);
 
-    mixer = new THREE.AnimationMixer(model);
+    // Log model structure and properties(logging and debugging purposes)
+    /* if (model) {
+      model.traverse((node) => {
+        console.log(node.name, node.type);
+        if (node.isMesh) {
+          console.log("Material:", node.material);
+        } else if (node.isBone) {
+          console.log(node.name);
+          console.log("Position:", node.position);
+          console.log("Rotation:", node.rotation);
+        }
+      });
+    } */
+    model.position.set(0, 0, 0);
+  },
+  undefined,
+  function (error) {
+    console.error(error);
+  }
+);
+/* let rotatedirection = 1;
+// Animation parameters
+const rotationSpeed = 0.02; // radians per frame
+// RotationDegree
+const minRotationY = -Math.PI / 4; // (-45 degrees)
+const maxRotationY = Math.PI / 4; // (45 degrees)
+let LeftFoot; */
 
-            // Create keyframe tracks for animation
-            const neckRotationKF = new KeyframeTrack('mixamorig1Neck.rotation[y]', [0, 1, 2], [0, Math.PI / 4, 0]);
-            const handRotationKF = new KeyframeTrack('mixamorig1LeftHand.rotation[z]', [0, 1, 2], [0, -Math.PI / 4, 0]);
-
-            // Create an animation clip containing the keyframe tracks
-            const clip = new AnimationClip('dance', 3, [neckRotationKF, handRotationKF]);
-            const action = mixer.clipAction(clip);
-            action.play();
-
-            animate(); // Start the animation loop
-        }, undefined, function(error) {
-            console.error(error);
-        });
-
-        // Define basic lighting
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Soft white light
-        scene.add(ambientLight);
-
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-        directionalLight.position.set(5, 5, 5).normalize();
-        scene.add(directionalLight);
-
-function animate() {
-    requestAnimationFrame(animate);
-
-    if (mixer) {
-        const delta = clock.getDelta();
-        mixer.update(delta);
+function applydata_saved() {
+  if (model && boneposition) {
+      model.traverse(node => {
+          if (node.isBone && data_saved[node.name]) {
+              const position = data_saved[node.name];
+              node.position.set(position.x, position.y, position.z);
+          }
+      });
+  }
+}
+/* function adjustmovement() {
+  // Example: Accessing and manipulating bones
+  selectpart();
+  if (function adjustmovement() {
+    // Example: Accessing and manipulating bones
+    selectpart();
+    if (LeftFoot) {
+      // Check if the rotation is within constraints
+      if (LeftFoot.rotation.y >= maxRotationY) {
+        rotatedirection = -1; // Switch to rotating left
+      } else if (LeftFoot.rotation.y <= minRotationY) {
+        rotatedirection = 1; // Switch to rotating right
+      }
+  
+      LeftFoot.rotation.y += rotationSpeed * rotatedirection;
+      //console.log(`Neck rotation: (${neckbone.rotation.x}, ${neckbone.rotation.y}, ${neckbone.rotation.z})`);
+    }
+  }) {
+    // Check if the rotation is within constraints
+    if (LeftFoot.rotation.y >= maxRotationY) {
+      rotatedirection = -1; // Switch to rotating left
+    } else if (LeftFoot.rotation.y <= minRotationY) {
+      rotatedirection = 1; // Switch to rotating right
     }
 
-    renderer.render(scene, camera);
+    LeftFoot.rotation.y += rotationSpeed * rotatedirection;
+    //console.log(`Neck rotation: (${neckbone.rotation.x}, ${neckbone.rotation.y}, ${neckbone.rotation.z})`);
+  }
+} */
+
+function animate() {
+  requestAnimationFrame(animate);
+  renderer.render(scene, camera);
 }
+
+animate();
+
+// Handle window resize
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
