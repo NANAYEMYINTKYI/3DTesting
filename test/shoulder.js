@@ -1,3 +1,5 @@
+// RightShoulder is the one above arm
+// Used this as RightShoulder in JSON
 import * as THREE from "three";
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
@@ -29,27 +31,29 @@ const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
 
 let model;
-let rightHandBone;
+let rightShoulderBone;
 
-// Function to identify and store the RightHand bone
-function identifyRightHandBone() {
+// Function to identify and store the RightShoulder bone
+function identifyRightShoulderBone() {
   if (model) {
     model.traverse((node) => {
-      if (node.isBone && node.name === "RightHand") {
-        rightHandBone = node;
-        console.log("RightHand bone identified:", rightHandBone.name);
+      if (node.isBone && node.name === "RightShoulder") {
+        rightShoulderBone = node;
+        console.log("RightShoulder bone identified:", rightShoulderBone.name);
       }
     });
   }
 }
 
-// Function to animate the RightHand
-function animateRightHand(time) {
-  if (rightHandBone) {
-    // Hand movement
-     rightHandBone.rotation.x = Math.sin(time * 1.5) * 0.5; // Wrist flexion ( as calibrate) 
-    // // rightHandBone.rotation.y = Math.cos(time * 1.3) * 0.5; // Slight wrist rotation (as calibrate)
-    // rightHandBone.rotation.z = Math.cos(time * 1.3) * 0.5; // (as calibrate)
+// Function to animate the RightShoulder
+function animateRightShoulder(time) {
+  if (rightShoulderBone) {
+    // Subtle side-to-side lean
+    rightShoulderBone.rotation.x = Math.sin(time * 1.1) * 0.2;
+    // rightShoulderBone.rotation.y = Math.sin(time * 1.1) * 0.2;
+    // rightShoulderBone.rotation.z = Math.sin(time * 1.1) * 0.2;
+    
+    
   }
 }
 
@@ -76,8 +80,8 @@ loader.load(
     }
     model.position.set(0, 0, 0);
 
-    // Identify RightHand bone after model is loaded
-    identifyRightHandBone();
+    // Identify RightShoulder bone after model is loaded
+    identifyRightShoulderBone();
   },
   undefined,
   function (error) {
@@ -91,7 +95,7 @@ function animate() {
   requestAnimationFrame(animate);
 
   time += 0.03; // Controls the speed of the animation
-  animateRightHand(time);
+  animateRightShoulder(time);
 
   renderer.render(scene, camera);
 }
